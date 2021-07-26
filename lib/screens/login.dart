@@ -31,7 +31,9 @@ class Login extends StatelessWidget {
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
                     ))),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signUp');
+                    },
                   ),
                 )
               ],
