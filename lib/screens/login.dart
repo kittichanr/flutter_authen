@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatelessWidget {
@@ -5,41 +6,56 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<FirebaseApp> _initializeFirebase() async {
+      FirebaseApp firebaseApp = await Firebase.initializeApp();
+      return firebaseApp;
+    }
+
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Image(
-                    image: AssetImage('images/logo.png'),
+        body: FutureBuilder(
+            future: _initializeFirebase(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Image(
+                            image: AssetImage('images/logo.png'),
+                          ),
+                        ),
+                        LoginForm(),
+                        Container(
+                          width: double.infinity,
+                          height: 44,
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          child: ElevatedButton(
+                            child: Text('Sign up'),
+                            style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ))),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signUp');
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                LoginForm(),
-                Container(
-                  width: double.infinity,
-                  height: 44,
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  child: ElevatedButton(
-                    child: Text('Sign up'),
-                    style: ButtonStyle(
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                    ))),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/signUp');
-                    },
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
+                );
+              }
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }),
       ),
     );
   }
