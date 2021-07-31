@@ -1,13 +1,28 @@
+import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_authen/modules/fire_auth.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     Future<FirebaseApp> _initializeFirebase() async {
       FirebaseApp firebaseApp = await Firebase.initializeApp();
+
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+
       return firebaseApp;
     }
 
@@ -61,16 +76,32 @@ class Login extends StatelessWidget {
   }
 }
 
+// typedef void BooleanCallback(bool val);
+
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  const LoginForm({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _LoginFormState createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final userNameController = TextEditingController();
-  final passWordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final _focusEmail = FocusNode();
+  final _focusPassword = FocusNode();
+
+  final _formKey = GlobalKey<FormState>();
+
+  String? _emailErrorText;
+  bool _emailError = false;
+  String? _passwordErrorText;
+  bool _passwordError = false;
+
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -79,50 +110,130 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    userNameController.dispose();
-    passWordController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
-  void _onLogin() {
-    print('username:${userNameController.text}');
-    print('password:${passWordController.text}');
+  void _onLogin(context) async {
+    _focusEmail.unfocus();
+    _focusPassword.unfocus();
+    _formKey.currentState!.validate();
+
+    if (_emailError || _passwordError) {
+      return;
+    } else {
+      try {
+        setState(() {
+          _isProcessing = true;
+        });
+        User? user = await FireAuth.signInUsingEmailPassword(
+          email: emailController.text,
+          password: passwordController.text,
+          context: context,
+        );
+        setState(() {
+          _isProcessing = false;
+        });
+
+        if (user != null) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          _isProcessing = false;
+        });
+        setState(() {
+          if (e.code == 'user-not-found') {
+            _emailError = true;
+            _emailErrorText = 'No user found for that email';
+          } else if (e.code == 'wrong-password') {
+            _passwordError = true;
+            _passwordErrorText = 'Wrong password provided.';
+          }
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          Container(
-            child: TextField(
-              controller: userNameController,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(), labelText: 'Username'),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Container(
+              child: TextFormField(
+                focusNode: _focusEmail,
+                validator: (value) {
+                  setState(() {
+                    if (value == null || value.isEmpty) {
+                      _emailError = true;
+                      _emailErrorText = 'Please fill text';
+                    }
+                    if (!EmailValidator.validate(value.toString())) {
+                      _emailError = true;
+                      _emailErrorText = 'Please fill email correctly';
+                    }
+                    return null;
+                  });
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _emailError = false;
+                    _emailErrorText = null;
+                  });
+                },
+                controller: emailController,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Email Address',
+                    errorText: _emailErrorText),
+              ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 16),
-            child: TextField(
-              controller: passWordController,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(), labelText: 'Password'),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 16),
+              child: TextFormField(
+                focusNode: _focusPassword,
+                validator: (value) {
+                  setState(() {
+                    if (value == null || value.isEmpty) {
+                      _passwordError = true;
+                      _passwordErrorText = 'Please fill text';
+                    }
+                    return null;
+                  });
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _passwordError = false;
+                    _passwordErrorText = null;
+                  });
+                },
+                obscureText: true,
+                controller: passwordController,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                    errorText: _passwordErrorText),
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 44,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            child: ElevatedButton(
-              child: Text('Login'),
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ))),
-              onPressed: _onLogin,
+            Container(
+              width: double.infinity,
+              height: 44,
+              margin: EdgeInsets.symmetric(vertical: 8),
+              child: ElevatedButton(
+                child: Text('Login'),
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ))),
+                onPressed: () => _onLogin(context),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

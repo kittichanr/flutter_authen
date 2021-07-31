@@ -45,7 +45,7 @@ class _SignUpState extends State<SignUp> {
 
   void _onSignUp(context) async {
     _formKey.currentState!.validate();
-    if (_nameError && _emailError && _passwordError) {
+    if (_nameError || _emailError || _passwordError) {
       return;
     } else {
       try {
