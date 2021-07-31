@@ -35,34 +35,36 @@ class _LoginState extends State<Login> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Image(
-                            image: AssetImage('images/logo.png'),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Image(
+                              image: AssetImage('images/logo.png'),
+                            ),
                           ),
-                        ),
-                        LoginForm(),
-                        Container(
-                          width: double.infinity,
-                          height: 44,
-                          margin: EdgeInsets.symmetric(vertical: 8),
-                          child: ElevatedButton(
-                            child: Text('Sign up'),
-                            style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ))),
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/signUp');
-                            },
-                          ),
-                        )
-                      ],
+                          LoginForm(),
+                          Container(
+                            width: double.infinity,
+                            height: 44,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            child: ElevatedButton(
+                              child: Text('Sign up'),
+                              style: ButtonStyle(
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                              ))),
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/signUp');
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 );
