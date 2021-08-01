@@ -1,8 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/modules/fire_auth.dart';
+import 'package:flutter_authen/screens/home.dart';
+import 'package:flutter_authen/screens/signup.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -14,67 +15,49 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    Future<FirebaseApp> _initializeFirebase() async {
-      FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-
-      return firebaseApp;
-    }
-
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: FutureBuilder(
-            future: _initializeFirebase(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Image(
-                              image: AssetImage('images/logo.png'),
-                            ),
-                          ),
-                          LoginForm(),
-                          Container(
-                            width: double.infinity,
-                            height: 44,
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            child: ElevatedButton(
-                              child: Text('Sign up'),
-                              style: ButtonStyle(
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18.0),
-                              ))),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/signUp');
-                              },
-                            ),
-                          )
-                        ],
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Image(
+                        image: AssetImage('images/logo.png'),
                       ),
                     ),
-                  ),
-                );
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }),
-      ),
-    );
+                    LoginForm(),
+                    Container(
+                      width: double.infinity,
+                      height: 44,
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      child: ElevatedButton(
+                        child: Text('Sign up'),
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ))),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SignUp(),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 }
 
@@ -139,7 +122,11 @@ class _LoginFormState extends State<LoginForm> {
         });
 
         if (user != null) {
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => HomePage(),
+            ),
+          );
         }
       } on FirebaseAuthException catch (e) {
         setState(() {
