@@ -2,8 +2,10 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/modules/fire_auth.dart';
+import 'package:flutter_authen/providers/UserProvider.dart';
 import 'package:flutter_authen/screens/home.dart';
 import 'package:flutter_authen/screens/signup.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -100,7 +102,7 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  void _onLogin(context) async {
+  void _onLogin(BuildContext context) async {
     _focusEmail.unfocus();
     _focusPassword.unfocus();
     _formKey.currentState!.validate();
@@ -122,6 +124,7 @@ class _LoginFormState extends State<LoginForm> {
         });
 
         if (user != null) {
+          context.read<UserProvider>().setUserName(user.displayName.toString());
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => HomePage(),
