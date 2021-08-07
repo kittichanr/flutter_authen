@@ -10,6 +10,7 @@ class DrawerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    var currentUser = FirebaseAuth.instance.currentUser;
 
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
@@ -22,7 +23,8 @@ class DrawerList extends StatelessWidget {
             child: Container(
               width: double.infinity,
               child: Text(
-                'Welcome back! ${userProvider.userName}',
+                // ignore: unnecessary_null_comparison
+                'Welcome back! ${userProvider.userName != null ? userProvider.userName : currentUser!.displayName}',
                 style: TextStyle(fontSize: 16),
               ),
             ),

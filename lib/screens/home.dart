@@ -12,12 +12,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Beepee's Cactus"),
-        ),
-        drawer: Drawer(
-          child: DrawerList(),
-        ),
-        body: null);
+      appBar: AppBar(
+        title: Text("Beepee's Cactus"),
+      ),
+      drawer: Drawer(
+        child: DrawerList(),
+      ),
+      body: null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+      ),
+    );
   }
 }
