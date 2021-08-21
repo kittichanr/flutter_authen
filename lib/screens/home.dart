@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/modules/image_picker.dart';
 import 'package:flutter_authen/widgets/drawerList.dart';
+import 'package:flutter_authen/widgets/imageList.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,8 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  File? imageUrl;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,17 +22,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         child: Center(
-          child: imageUrl != null ? Image.file(imageUrl!) : Text('no image'),
+          child: ImageList(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          File? image = await ImagePickers().pickImage();
-          setState(() {
-            if (image != null) {
-              imageUrl = image;
-            }
-          });
+          await ImagePickers().pickImage();
+          setState(() {});
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
