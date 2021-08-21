@@ -22,4 +22,8 @@ class FireStorage {
 
     return files;
   }
+
+  Future<void> deleteImage(String ref) async {
+    await storage.ref(ref).delete();
+  }
 }

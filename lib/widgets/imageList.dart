@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/modules/fire_storage.dart';
 
-class ImageList extends StatelessWidget {
+class ImageList extends StatefulWidget {
   const ImageList({Key? key}) : super(key: key);
 
+  @override
+  _ImageListState createState() => _ImageListState();
+}
+
+class _ImageListState extends State<ImageList> {
   @override
   Widget build(BuildContext context) {
     Future<List<Map<String, dynamic>>> imageList = FireStorage().getImageList();
@@ -24,7 +29,10 @@ class ImageList extends StatelessWidget {
                       title: Text(image['uploaded_by']),
                       subtitle: Text(image['description']),
                       trailing: IconButton(
-                        onPressed: () => {},
+                        onPressed: () => {
+                          FireStorage().deleteImage(image['path']),
+                          setState(() {})
+                        },
                         icon: Icon(
                           Icons.delete,
                           color: Colors.red,
