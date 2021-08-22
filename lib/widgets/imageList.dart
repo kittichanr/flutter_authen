@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_authen/modules/fire_storage.dart';
+import 'package:flutter_authen/providers/ImageProvider.dart';
+import 'package:flutter_authen/widgets/gridItem.dart';
+import 'package:provider/provider.dart';
 
 class ImageList extends StatefulWidget {
   const ImageList({Key? key}) : super(key: key);
@@ -10,36 +12,40 @@ class ImageList extends StatefulWidget {
 
 class _ImageListState extends State<ImageList> {
   @override
-  Widget build(BuildContext context) {
-    Future<List<Map<String, dynamic>>> imageList = FireStorage().getImageList();
+  void initState() {
+    super.initState();
+    context.read<ImgProvider>().fetchImageList();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder(
-        future: imageList,
-        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        future: context.read<ImgProvider>().imageList,
+        builder: (_, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder(
+            return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5.0,
+                  mainAxisSpacing: 5.0,
+                ),
                 itemCount: snapshot.data?.length ?? 0,
-                itemBuilder: (context, index) {
+                itemBuilder: (_, index) {
                   final Map<String, dynamic> image = snapshot.data![index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    child: ListTile(
-                      dense: false,
-                      leading: Image.network(image['url']),
-                      title: Text(image['uploaded_by']),
-                      subtitle: Text(image['description']),
-                      trailing: IconButton(
-                        onPressed: () => {
-                          FireStorage().deleteImage(image['path']),
-                          setState(() {})
-                        },
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                  );
+                  return GridItem(
+                      item: image,
+                      isSelected: (bool value) {
+                        setState(() {
+                          if (value) {
+                            context.read<ImgProvider>().addSelectImage(image);
+                          } else {
+                            context
+                                .read<ImgProvider>()
+                                .removeSelectImage(image);
+                          }
+                        });
+                      },
+                      key: Key(snapshot.data![index].toString()));
                 });
           }
           return Center(

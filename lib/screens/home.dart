@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await ImagePickers().pickImage();
+          await ImagePickers().pickImage(context);
           setState(() {});
         },
         child: const Icon(Icons.add),

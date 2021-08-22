@@ -14,12 +14,14 @@ class FireStorage {
       files.add({
         "url": fileUrl,
         "path": file.fullPath,
-        "uploaded_by": fileMeta.customMetadata?['uploaded_by'] ?? 'Nobody',
-        "description":
-            fileMeta.customMetadata?['description'] ?? 'No description'
+        "uploadedTime": fileMeta.customMetadata?['uploaded_time']
       });
     });
-
+    files.sort((a, b) {
+      var adate = a['uploadedTime'];
+      var bdate = b['uploadedTime'];
+      return adate.compareTo(bdate);
+    });
     return files;
   }
 

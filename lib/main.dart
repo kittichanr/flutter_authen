@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/providers/UserProvider.dart';
+import 'package:flutter_authen/providers/ImageProvider.dart';
 import 'package:flutter_authen/screens/home.dart';
 import 'package:flutter_authen/screens/login.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,8 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(
-        create: (_) => UserProvider(),
-      ),
+      ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
+      ChangeNotifierProvider<ImgProvider>(create: (_) => ImgProvider())
     ],
     child: MyApp(),
   ));
