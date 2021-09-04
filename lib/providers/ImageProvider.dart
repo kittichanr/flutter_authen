@@ -14,6 +14,7 @@ class ImgProvider with ChangeNotifier {
 
   late Future<List<Map<String, dynamic>>> _imageList;
   Future<List<Map<String, dynamic>>> get imageList => _imageList;
+
   void fetchImageList() {
     notifyListeners();
     _imageList = FireStorage().getImageList();
@@ -45,9 +46,14 @@ class ImgProvider with ChangeNotifier {
 
   void saveSelectedImage() async {
     notifyListeners();
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String dir = '';
+    if (Platform.isAndroid) {
+      dir = (await getExternalStorageDirectory())!.path;
+    } else if (Platform.isIOS) {
+      dir = (await getApplicationDocumentsDirectory()).path;
+    }
     File downloadToFile = File(
-        '${appDocDir.path}/beepees-${DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now())}.png');
+        '${dir}/beepees-${DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now())}.png');
     try {
       for (var i = 0; i < _selectedList.length; i++) {
         await firebase_storage.FirebaseStorage.instance
