@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
                     child: GestureDetector(
                       onTap: () {
                         imageProvider.deleteSelectedImage();
-                        imageProvider.fetchImageList();
                       },
                       child: Icon(Icons.delete),
                     )),

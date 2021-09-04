@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_authen/modules/fire_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -34,6 +35,12 @@ class ImgProvider with ChangeNotifier {
       FireStorage().deleteImage(_selectedList[i]['path']);
     }
     _selectedList = [];
+    fetchImageList();
+    Fluttertoast.showToast(
+      msg: "ลบสำเร็จ",
+      toastLength: Toast.LENGTH_LONG,
+      fontSize: 18.0,
+    );
   }
 
   void saveSelectedImage() async {
@@ -48,7 +55,13 @@ class ImgProvider with ChangeNotifier {
             .writeToFile(downloadToFile);
       }
       _selectedList = [];
+
       fetchImageList();
+      Fluttertoast.showToast(
+        msg: "ดาวน์โหลดสำเร็จ",
+        toastLength: Toast.LENGTH_LONG,
+        fontSize: 18.0,
+      );
     } on firebase_core.FirebaseException catch (e) {
       print(e);
     }
